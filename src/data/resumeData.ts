@@ -1,4 +1,6 @@
 import { Project, SkillCategory } from '../types';
+import aegisLogo from '../assets/aegis-logo.png';
+import aegisDashboard from '../assets/aegis-dashboard.png';
 
 export const personalDetails = {
   name: "Tejas Fartade",
@@ -29,6 +31,34 @@ export const personalDetails = {
 };
 
 export const projectsData: Project[] = [
+  {
+    id: "aegis",
+    title: "AEGIS — Secure Storage",
+    tagline: "Local encrypted file and folder storage. Built for Windows, designed around explicit control.",
+    category: "Defensive Security",
+    githubUrl: "https://github.com/Tejas-Fartade/AEGIS",
+    downloadUrl: "https://github.com/Tejas-Fartade/AEGIS/releases/download/v1.2.0/AEGIS-Setup-1.2.0.exe",
+    releaseUrl: "https://github.com/Tejas-Fartade/AEGIS/releases/tag/v1.2.0",
+    version: "1.2.0",
+    logo: aegisLogo,
+    screenshot: aegisDashboard,
+    downloadNotice: "Windows x64 · Unsigned installer · Not independently security-audited. Keep backups; passwords cannot be recovered.",
+    tags: ["Electron", "TypeScript", "React", "AES-256-GCM", "Argon2id"],
+    featured: true,
+    description: "A Windows desktop application for protecting files and folders in versioned, password-encrypted .aegis containers. Combines authenticated encryption with a local Vault library, batch workflows, integrity checks and safe password changes, wrapped in a cyan-and-gunmetal interface.",
+    bullets: [
+      "Protect and unlock files or folders using Argon2id and AES-256-GCM; full authentication precedes restoration.",
+      "Drag-and-drop and sequential batch workflows, with collision rejection and original removal off by default.",
+      "Vault references, password-authenticated integrity checks and streamed password changes without plaintext disk staging.",
+      "Separately confirmed best-effort Shredder; physical erasure is not guaranteed.",
+      "1.2.0 verification: 912 tests passed, including 38 packaged Windows tests. Testing is not an independent security audit.",
+    ],
+    architecture: [
+      "React interface → narrow Electron IPC → validated, identity-bound filesystem selections",
+      "Argon2id key derivation → AES-256-GCM authenticated records → versioned .aegis container",
+      "Full container authentication → restoration-plan validation → collision-safe output",
+    ],
+  },
   {
     id: "netwatch",
     title: "NETWATCH — Network Packet Monitoring & Threat Detection Tool",

@@ -8,8 +8,15 @@ export const GitHubSection: React.FC = () => {
 
   useEffect(() => {
     fetch('/api/github/stats')
-      .then(r => r.json())
-      .then(data => { setStats(data); setLoading(false); })
+      .then(r => {
+        if (!r.ok) throw new Error('GitHub data unavailable');
+        return r.json();
+      })
+      .then(data => {
+        if (!data?.user || !Array.isArray(data.repos)) throw new Error('Invalid GitHub response');
+        setStats(data);
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, []);
 

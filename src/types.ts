@@ -5,6 +5,12 @@ export interface Project {
   category: 'Network Security' | 'Defensive Security' | 'AI / ML';
   githubUrl: string;
   demoUrl?: string;
+  downloadUrl?: string;
+  releaseUrl?: string;
+  version?: string;
+  logo?: string;
+  screenshot?: string;
+  downloadNotice?: string;
   tags: string[];
   description: string;
   bullets: string[];

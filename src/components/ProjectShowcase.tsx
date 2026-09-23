@@ -1,10 +1,24 @@
-import React, { useState } from 'react';
-import { Github, ArrowUpRight, CheckCircle } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Github, ArrowUpRight, CheckCircle, Download } from 'lucide-react';
 import { projectsData } from '../data/resumeData';
 import { Project } from '../types';
 
 export const ProjectShowcase: React.FC = () => {
   const [active, setActive] = useState<Project | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (!active) return;
+    const dialog = dialogRef.current;
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    dialog?.showModal();
+    document.body.style.overflow = 'hidden';
+    return () => {
+      dialog?.close();
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
+    };
+  }, [active]);
 
   return (
     <section id="projects" className="bg-[#06060f] border-t border-[#1a1a3a]">
@@ -22,8 +36,8 @@ export const ProjectShowcase: React.FC = () => {
           </div>
           <div className="lg:col-span-5">
             <p className="text-[#6b6b9a] text-sm leading-relaxed">
-              Practical Python tools built for packet monitoring, cryptographic
-              integrity auditing, and automated threat detection.
+              Practical security software, from encrypted Windows storage to
+              packet monitoring, file integrity auditing and threat detection.
             </p>
             <a
               href="https://github.com/Tejas-Fartade"
@@ -42,8 +56,7 @@ export const ProjectShowcase: React.FC = () => {
           {projectsData.map((project, i) => (
             <div
               key={project.id}
-              className="grid grid-cols-12 gap-6 px-8 py-10 border-b border-[#1a1a3a] last:border-b-0 hover:bg-[#0a0a18] transition-colors cursor-pointer group"
-              onClick={() => setActive(project)}
+              className="grid grid-cols-12 gap-6 px-5 sm:px-8 py-10 border-b border-[#1a1a3a] last:border-b-0 hover:bg-[#0a0a18] transition-colors group"
             >
               {/* Number */}
               <div className="col-span-1 pt-1">
@@ -53,9 +66,11 @@ export const ProjectShowcase: React.FC = () => {
               {/* Main content */}
               <div className="col-span-11 lg:col-span-8 space-y-3">
                 <div className="flex items-start gap-4">
+                  {project.logo && <img src={project.logo} alt="" width={64} height={64} className="w-12 sm:w-16 h-auto shrink-0" />}
                   <div>
                     <span className="font-mono text-[10px] uppercase tracking-widest text-[#7c5cfc]">
                       {project.category}
+                      {project.version && <span className="block mt-1 text-cyan-300">Featured release / v{project.version}</span>}
                     </span>
                     <h3 className="font-display text-2xl lg:text-3xl text-white uppercase mt-1 group-hover:text-[#4f8ef7] transition-colors leading-tight">
                       {project.title.split('—')[0].trim()}
@@ -75,8 +90,13 @@ export const ProjectShowcase: React.FC = () => {
               </div>
 
               {/* Actions */}
-              <div className="col-span-12 lg:col-span-3 flex lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-4">
-                <button className="font-mono text-[11px] uppercase tracking-widest text-[#4f8ef7] hover:underline">
+              <div className="col-span-12 lg:col-span-3 flex flex-wrap lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-4">
+                {project.downloadUrl && (
+                  <a href={project.downloadUrl} className="inline-flex items-center gap-2 px-4 py-3 bg-cyan-300 text-[#06060f] font-mono text-[11px] font-bold uppercase hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300">
+                    <Download className="w-4 h-4" /> Download for Windows
+                  </a>
+                )}
+                <button onClick={() => setActive(project)} aria-label={`Inspect ${project.title}`} className="font-mono text-[11px] uppercase tracking-widest text-[#4f8ef7] hover:underline">
                   Inspect →
                 </button>
                 <a
@@ -90,6 +110,17 @@ export const ProjectShowcase: React.FC = () => {
                   GitHub
                 </a>
               </div>
+              {project.screenshot && (
+                <div className="col-span-12 lg:col-start-2 lg:col-span-11 space-y-4">
+                  <button onClick={() => setActive(project)} aria-label="View AEGIS project details" className="block w-full overflow-hidden border border-cyan-300/20 bg-black focus-visible:outline-2 focus-visible:outline-cyan-300">
+                    <img src={project.screenshot} alt="AEGIS desktop dashboard with protect, unlock, Vault and integrity-check workflows" loading="lazy" width={1581} height={1911} className="w-full h-auto max-h-[440px] object-cover object-top" />
+                  </button>
+                  <p className="text-xs leading-relaxed text-[#a0a0be]">
+                    {project.downloadNotice}{' '}
+                    <a href={project.releaseUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-300 underline underline-offset-4">Release notes & SHA-256 checksum</a>
+                  </p>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -97,13 +128,12 @@ export const ProjectShowcase: React.FC = () => {
 
       {/* Modal */}
       {active && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#06060f]/95 backdrop-blur-md">
-          <div className="bg-[#0a0a18] border border-[#1a1a3a] max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <dialog ref={dialogRef} onCancel={() => setActive(null)} aria-labelledby="project-dialog-title" className="m-auto p-0 w-[calc(100%-2rem)] max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0a0a18] border border-[#1a1a3a] backdrop:bg-[#06060f]/95 backdrop:backdrop-blur-md">
             {/* Modal header */}
             <div className="flex items-start justify-between p-8 border-b border-[#1a1a3a]">
               <div>
                 <span className="font-mono text-[10px] uppercase tracking-widest text-[#7c5cfc]">{active.category}</span>
-                <h3 className="font-display text-3xl text-white uppercase mt-1 leading-tight">{active.title.split('—')[0].trim()}</h3>
+                <h3 id="project-dialog-title" className="font-display text-3xl text-white uppercase mt-1 leading-tight">{active.title.split('—')[0].trim()}</h3>
               </div>
               <button
                 onClick={() => setActive(null)}
@@ -115,6 +145,15 @@ export const ProjectShowcase: React.FC = () => {
 
             <div className="p-8 space-y-8">
               <p className="text-[#6b6b9a] text-sm leading-relaxed">{active.description}</p>
+              {active.downloadUrl && (
+                <div className="space-y-3">
+                  <a href={active.downloadUrl} className="flex items-center justify-center gap-2 px-4 py-3 bg-cyan-300 text-[#06060f] font-mono text-xs font-bold uppercase hover:bg-white">
+                    <Download className="w-4 h-4" /> Download v{active.version} · Windows x64
+                  </a>
+                  <p className="text-xs leading-relaxed text-[#a0a0be]">{active.downloadNotice}</p>
+                  <a href={active.releaseUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-300 underline">Release notes & SHA-256 checksum</a>
+                </div>
+              )}
 
               {/* Architecture */}
               <div className="space-y-3">
@@ -153,8 +192,7 @@ export const ProjectShowcase: React.FC = () => {
                 <ArrowUpRight className="w-4 h-4" />
               </a>
             </div>
-          </div>
-        </div>
+        </dialog>
       )}
     </section>
   );
