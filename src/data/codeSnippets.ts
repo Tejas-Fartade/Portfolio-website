@@ -6,78 +6,18 @@ export const codeSnippets: CodeSnippet[] = [
     title: "NETWATCH Packet Sniffer & Traffic Analyzer",
     language: "python",
     filename: "netwatch_sniffer.py",
-    description: "Live packet capture script using Scapy. Categorizes IP, TCP, UDP, ICMP, DNS packets and triggers port-scan threshold alerts.",
-    code: `#!/usr/bin/env python3
-"""
-NETWATCH - Live Packet Sniffer & Threat Detection Tool
-Developer: Tejas Fartade (Cybersecurity Intern)
-"""
-
-import sys
-import time
-from collections import defaultdict
-from scapy.all import sniff, IP, TCP, UDP, ICMP, DNS
-
-# Traffic statistics tracking
-port_activity = defaultdict(int)
-SCAN_THRESHOLD = 5  # Alert if >5 requests to distinct ports within window
-
-def packet_callback(packet):
-    if not packet.haslayer(IP):
-        return
-
-    src_ip = packet[IP].src
-    dst_ip = packet[IP].dst
-    proto = "OTHER"
-    src_port, dst_port = "-", "-"
-
-    if packet.haslayer(TCP):
-        proto = "TCP"
-        src_port = packet[TCP].sport
-        dst_port = packet[TCP].dport
-        port_activity[(src_ip, dst_port)] += 1
-
-    elif packet.haslayer(UDP):
-        proto = "UDP"
-        src_port = packet[UDP].sport
-        dst_port = packet[UDP].dport
-
-    elif packet.haslayer(ICMP):
-        proto = "ICMP"
-
-    if packet.haslayer(DNS):
-        proto = "DNS"
-
-    timestamp = time.strftime("%H:%M:%S")
-    print(f"[{timestamp}] [{proto:<4}] {src_ip}:{src_port} --> {dst_ip}:{dst_port}")
-
-    # Port scan alert logic
-    if port_activity[(src_ip, dst_port)] > SCAN_THRESHOLD:
-        print(f"\\033[91m[ALERT] Repeated Port Activity Detected! Host {src_ip} hitting Port {dst_port}\\033[0m")
-
-def start_capture(interface="eth0", count=10):
-    print(f"\\033[92m[+] NETWATCH initialized on interface '{interface}'\\033[0m")
-    print("[+] Filtering TCP/UDP/ICMP/DNS traffic... Press Ctrl+C to stop.")
-    print("-" * 65)
-    sniff(iface=interface, prn=packet_callback, store=0, count=count)
-
-if __name__ == "__main__":
-    start_capture(count=8)
-`,
+    description: "NETWATCH entry-point example using the repository modules. Parses structured events and alerts on distinct ports per source/target within a rolling window. Browser output is simulated.",
+    code: "#!/usr/bin/env python3\n\"\"\"Save beside the modules in NETWATCH's netwatch/ folder.\"\"\"\nfrom scapy.all import sniff\nfrom detection import PortScanDetector\nfrom parsing import parse_packet\nfrom output import format_event, format_alert\n\nSCAN_THRESHOLD = 6\nSCAN_WINDOW = 10.0\nINTERFACE = None  # Scapy default; set to your capture interface.\ndetector = PortScanDetector(SCAN_THRESHOLD, SCAN_WINDOW)\n\ndef packet_callback(packet):\n    detector.expire()\n    event = parse_packet(packet)\n    if event is None:\n        return\n    print(format_event(event))\n    alert = detector.observe(event)\n    if alert is not None:\n        print(format_alert(alert))\n\nif __name__ == \"__main__\":\n    sniff(iface=INTERFACE, prn=packet_callback, store=False)\n",
     sampleOutput: [
-      "\x1b[92m[+] NETWATCH initialized on interface 'eth0'\x1b[0m",
-      "[+] Filtering TCP/UDP/ICMP/DNS traffic... Press Ctrl+C to stop.",
-      "-----------------------------------------------------------------",
-      "[04:15:02] [TCP ] 192.168.1.105:54322 --> 142.250.190.46:443",
-      "[04:15:02] [DNS ] 192.168.1.105:58210 --> 8.8.8.8:53 (Query: github.com)",
-      "[04:15:03] [UDP ] 192.168.1.105:51200 --> 192.168.1.1:123",
-      "[04:15:03] [ICMP] 192.168.1.105:-     --> 192.168.1.254:- (Echo Request)",
-      "[04:15:04] [TCP ] 10.0.2.15:48821     --> 192.168.1.1:22",
-      "[04:15:04] [TCP ] 10.0.2.15:48822     --> 192.168.1.1:22",
-      "[04:15:04] [TCP ] 10.0.2.15:48823     --> 192.168.1.1:22",
-      "\x1b[91m[ALERT] Repeated Port Activity Detected! Host 10.0.2.15 hitting Port 22\x1b[0m",
-      "[+] Session complete. 8 packets processed. 0 errors.",
-    ],
+      "[+] Example traffic: scan threshold 6 distinct ports in 10 seconds.",
+      "[2026-09-24T00:00:01+00:00] 192.168.1.10:50000 -> 192.168.1.20:21 [TCP]",
+      "[2026-09-24T00:00:01+00:00] 192.168.1.10:50000 -> 192.168.1.20:22 [TCP]",
+      "[2026-09-24T00:00:01+00:00] 192.168.1.10:50000 -> 192.168.1.20:23 [TCP]",
+      "[2026-09-24T00:00:01+00:00] 192.168.1.10:50000 -> 192.168.1.20:80 [TCP]",
+      "[2026-09-24T00:00:01+00:00] 192.168.1.10:50000 -> 192.168.1.20:443 [TCP]",
+      "[2026-09-24T00:00:01+00:00] 192.168.1.10:50000 -> 192.168.1.20:8080 [TCP]",
+      "ALERT: possible port scan from 192.168.1.10 to 192.168.1.20 (6 destination ports / 10s)"
+],
   },
   {
     id: "fim_snippet",
@@ -183,57 +123,6 @@ if __name__ == "__main__":
       "\x1b[93m [CREATED]  /etc/network_configs/temp_payload.sh\x1b[0m",
       "--------------------------------------------------",
       "\x1b[91m[WARNING] Filesystem changes detected! Integrity breach logged.\x1b[0m",
-    ],
-  },
-  {
-    id: "food_snippet",
-    title: "FastAPI Backend Rule-Based Evaluator",
-    language: "python",
-    filename: "main.py",
-    description: "FastAPI REST backend snippet for evaluating product ingredient safety and health profile rules.",
-    code: `from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List, Dict
-
-app = FastAPI(title="Product Truth Teller API", version="1.0.0")
-
-class HealthProfile(BaseModel):
-    user_id: str
-    allergies: List[str]
-    dietary_goals: List[str]
-
-class IngredientAnalysisRequest(BaseModel):
-    product_name: str
-    ingredients: List[str]
-    profile: HealthProfile
-
-@app.post("/api/v1/analyze-product")
-async def analyze_product(payload: IngredientAnalysisRequest):
-    warnings = []
-    matches = []
-
-    for ing in payload.ingredients:
-        ing_lower = ing.lower()
-        for allergy in payload.profile.allergies:
-            if allergy.lower() in ing_lower:
-                warnings.append(f"Contains allergen '{ing}' matching allergy '{allergy}'")
-
-    score = max(0, 100 - (len(warnings) * 25))
-
-    return {
-        "product": payload.product_name,
-        "safety_score": score,
-        "status": "PASS" if score >= 75 else "WARNING",
-        "warnings": warnings,
-        "analyzed_count": len(payload.ingredients)
-    }
-`,
-    sampleOutput: [
-      "INFO:     Started server process [18294]",
-      "INFO:     Waiting for application startup.",
-      "INFO:     Application startup complete.",
-      "INFO:     POST /api/v1/analyze-product HTTP/1.1 200 OK",
-      "RESULT:   {'product': 'Granola Crunch', 'safety_score': 100, 'status': 'PASS', 'warnings': []}",
     ],
   },
   {

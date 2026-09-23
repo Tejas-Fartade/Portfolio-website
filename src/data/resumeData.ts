@@ -64,7 +64,7 @@ export const projectsData: Project[] = [
     title: "NETWATCH — Network Packet Monitoring & Threat Detection Tool",
     tagline: "Python & Scapy based authorized network traffic analysis tool with port scan alerting.",
     category: "Network Security",
-    githubUrl: "https://github.com/Tejas-Fartade/NETWATCH",
+    githubUrl: "https://github.com/Tejas-Fartade/NETWATCH-----packet-sniffer--",
     tags: ["Python", "Scapy", "Network Security", "TCP/UDP/ICMP", "DNS", "PCAP/CSV Export", "Port Scan Alerting"],
     featured: true,
     codeSnippetId: "netwatch_snippet",
@@ -72,7 +72,7 @@ export const projectsData: Project[] = [
     bullets: [
       "Built a Python/Scapy packet-monitoring tool for authorized network traffic analysis.",
       "Implemented live capture, source/destination IPs, TCP/UDP/ICMP identification, ports, and DNS visibility.",
-      "Added traffic filters, live statistical rollups, PCAP/CSV export, and basic repeated-port/port-scan alerting.",
+      "Added traffic filters, live statistical rollups, PCAP/CSV export, and distinct-port scan alerts per source/target within a configurable time window.",
       "Supports command-line parameters for interface binding and real-time console logging.",
     ],
     architecture: [
@@ -101,27 +101,6 @@ export const projectsData: Project[] = [
       "Target Directory -> Recursive Walker -> SHA-256 Hash Generator Engine",
       "JSON Baseline Store <-> Differential Analyzer Engine",
       "Tamper Alert Generator -> Terminal Integrity Audit Summary",
-    ],
-  },
-  {
-    id: "food-truth-teller",
-    title: "Personalized Food Product Truth Teller — AI/ML Project",
-    tagline: "FastAPI & React platform integrating rule-based ingredient analysis and local AI models.",
-    category: "AI / ML",
-    githubUrl: "https://github.com/Tejas-Fartade",
-    tags: ["Python", "FastAPI", "React", "Rule-based AI", "APIs", "Database", "Git Collaboration"],
-    featured: false,
-    codeSnippetId: "food_snippet",
-    description: "Worked with FastAPI, product data, user profile information, rule-based analysis, APIs, databases, and a React frontend to analyze food product claims.",
-    bullets: [
-      "Worked with FastAPI, product datasets, health profile rules, and APIs for automated verification.",
-      "Demonstrates experience with backend development, data handling, local AI model integration, and Git-based collaboration.",
-      "Implemented structured JSON responses for React frontend display and nutritional validation.",
-    ],
-    architecture: [
-      "React UI Frontend -> RESTful API Requests -> FastAPI Backend Engine",
-      "User Health Profile Rules + Ingredient Database -> AI Rule Matrix",
-      "Ingredient Risk Assessment Engine -> Detailed Truth Report",
     ],
   },
 ];
