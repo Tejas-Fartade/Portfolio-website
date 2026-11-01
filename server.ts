@@ -6,7 +6,8 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  // The contact form sends plain JSON; reject compressed bodies before decoding.
+  app.use(express.json({ inflate: false }));
 
   // API Routes
   app.get("/api/health", (_req, res) => {

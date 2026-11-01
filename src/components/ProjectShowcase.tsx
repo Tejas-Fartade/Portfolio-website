@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Github, ArrowUpRight, CheckCircle, Download } from 'lucide-react';
 import { projectsData } from '../data/resumeData';
 import { Project } from '../types';
+import { MahoragaProgress } from './MahoragaProgress';
 
 export const ProjectShowcase: React.FC = () => {
   const [active, setActive] = useState<Project | null>(null);
@@ -50,6 +51,8 @@ export const ProjectShowcase: React.FC = () => {
             </a>
           </div>
         </div>
+
+        <MahoragaProgress />
 
         {/* Projects list — Honey-style numbered rows */}
         <div className="space-y-0 border border-[#1a1a3a]">
